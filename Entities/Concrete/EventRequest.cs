@@ -11,6 +11,6 @@ namespace Entities.Concrete
         public int Id { get; set; }
         public int EventId { get; set; }
         public int InviterPhone { get; set; }
-        public int MyProperty { get; set; }
+        public string Status { get; set; }
     }
 }

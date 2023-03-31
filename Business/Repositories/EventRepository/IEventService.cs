@@ -16,6 +16,6 @@ namespace Business.Repositories.EventRepository
         Task<IResult> Delete(int eventId);
         Task<IDataResult<List<Event>>> GetAllEvent();
 
-        Task<IDataResult<List<Event>>> GetPersonalEvent();
+        Task<IDataResult<List<Event>>> GetPersonalEvent(string phone);
     }
 }

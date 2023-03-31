@@ -18,5 +18,7 @@ namespace DataAccess.Context.EntityFramework
 
         public DbSet<Event> Event { get; set; }
         public DbSet<Rate> Rate { get; set; }
+        public DbSet<EventRequest> EventRequest { get; set; }
+
     }
 }

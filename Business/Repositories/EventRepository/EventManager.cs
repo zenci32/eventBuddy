@@ -44,9 +44,12 @@ namespace Business.Repositories.EventRepository
             return new SuccessResult("Event başarıyla oluşturulmuştur", 200);
         }
 
-        public Task<IResult> Delete(int eventId)
+        public async Task<IResult> Delete(int eventId)
         {
-            throw new NotImplementedException();
+            var getEvent = _eventDal.Get(x=>x.EventId== eventId).Result;
+            getEvent.IsDeleted= true;
+            await _eventDal.Update(getEvent);
+            return new SuccessResult("Event başarıyla silinmiştir", 200);
         }
 
         public async Task<IDataResult<List<Event>>> GetAllEvent()
@@ -56,14 +59,16 @@ namespace Business.Repositories.EventRepository
             return new SuccessDataResult<List<Event>>(getAllEvent,"Eventler listelenmiştir",200);
         }
 
-        public Task<IDataResult<List<Event>>> GetPersonalEvent()
+        public async Task<IDataResult<List<Event>>> GetPersonalEvent(string phone)
         {
-            throw new NotImplementedException();
+            var getPersonAllEvent = await _eventDal.GetAll(x => x.Phone==phone);
+            return new SuccessDataResult<List<Event>>(getPersonAllEvent, "Eventler başarılı bir şekilde listelenmiştir", 200);
         }
 
-        public Task<IResult> Update(Event eventt)
+        public async Task<IResult> Update(Event eventt)
         {
-            throw new NotImplementedException();
+            await _eventDal.Update(eventt);
+            return new SuccessResult("Event başarıyla güncellenmiştir", 200);
         }
     }
 }
