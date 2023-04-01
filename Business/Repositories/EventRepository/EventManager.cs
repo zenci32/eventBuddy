@@ -3,6 +3,7 @@ using Business.Repositories.EmailRepository;
 using Core.Utilities.Result.Abstract;
 using Core.Utilities.Result.Concrete;
 using DataAccess.Repositories.EventRepository;
+using DataAccess.Repositories.EventRequestRepository;
 using DataAccess.Repositories.UserRepository;
 using Entities.Concrete;
 using Entities.Dtos;
@@ -17,10 +18,13 @@ namespace Business.Repositories.EventRepository
     internal class EventManager : IEventService
     {
         private readonly IEventDal _eventDal;
+        private readonly IEventRequestDal _eventRequestDal;
 
-        public EventManager(IEventDal eventDal)
+
+        public EventManager(IEventDal eventDal, IEventRequestDal eventRequestDal)
         {
             _eventDal = eventDal;
+            _eventRequestDal = eventRequestDal;
         }
         public async Task<IResult> Add(EventDto eventDto)
         {
@@ -46,22 +50,40 @@ namespace Business.Repositories.EventRepository
 
         public async Task<IResult> Delete(int eventId)
         {
-            var getEvent = _eventDal.Get(x=>x.EventId== eventId).Result;
-            getEvent.IsDeleted= true;
+            var getEvent = _eventDal.Get(x => x.EventId == eventId).Result;
+            getEvent.IsDeleted = true;
             await _eventDal.Update(getEvent);
+            var eventRequest = _eventRequestDal.GetAll(x => x.EventId == eventId).Result;
+            if (eventRequest.Any())
+            {
+                foreach (var item in eventRequest)
+                {
+                    item.Status = "deleted";
+                    await _eventRequestDal.Update(item);
+                }
+            }
             return new SuccessResult("Event başarıyla silinmiştir", 200);
         }
 
-        public async Task<IDataResult<List<Event>>> GetAllEvent()
+        public async Task<IDataResult<List<Event>>> GetAllEvent(string phone)
         {
-           var getAllEvent = await _eventDal.GetAll(x=>x.IsDeleted == false);
+            var eventt = new List<Event>();
+            var getAllEvent = await _eventDal.GetAll(x => x.IsDeleted == false);
+            var getRequestedEvent = _eventRequestDal.GetAll(x => x.InviterPhone == phone).Result;
 
-            return new SuccessDataResult<List<Event>>(getAllEvent,"Eventler listelenmiştir",200);
+            if (getRequestedEvent.Any())
+            {
+                foreach (var item in getRequestedEvent)
+                {
+                    getAllEvent.RemoveAll(x => x.EventId == item.EventId);
+                }
+            }
+            return new SuccessDataResult<List<Event>>(getAllEvent, "Eventler listelenmiştir", 200);
         }
 
         public async Task<IDataResult<List<Event>>> GetPersonalEvent(string phone)
         {
-            var getPersonAllEvent = await _eventDal.GetAll(x => x.Phone==phone);
+            var getPersonAllEvent = await _eventDal.GetAll(x => x.Phone == phone);
             return new SuccessDataResult<List<Event>>(getPersonAllEvent, "Eventler başarılı bir şekilde listelenmiştir", 200);
         }
 

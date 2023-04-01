@@ -27,6 +27,23 @@ namespace Business.Repositories.EventRequestRepository
             _userDal = userDal;
         }
 
+        /// <summary>
+        /// İçinde bulunan eventten ayrılma
+        /// </summary>
+        /// <param name="eventId"></param>
+        /// <param name="inviterPhone"></param>
+        /// <returns></returns>
+        /// <exception cref="NotImplementedException"></exception>
+        public async Task<IResult> EventExit(int eventId, string inviterPhone)
+        {
+            var getEventRequest = _eventRequestDal.Get(x => x.EventId == eventId && x.InviterPhone == inviterPhone).Result;
+            await _eventRequestDal.Delete(getEventRequest);
+            var eventt = _eventDal.Get(x => x.EventId == eventId).Result;
+            eventt.ActiveCount -= 1;
+            await _eventDal.Update(eventt);
+            return new SuccessResult("Eventten ayrıldınız edilmiştir", 200);
+        }
+
         public async Task<IResult> EventRequest(int eventId, string inviterPhone)
         {
             var eventt = _eventDal.Get(x => x.EventId == eventId).Result;
@@ -43,12 +60,20 @@ namespace Business.Repositories.EventRequestRepository
             }
         }
 
+        /// <summary>
+        /// Event katılma isteği iptal
+        /// </summary>
+        /// <param name="eventId"></param>
+        /// <param name="inviterPhone"></param>
+        /// <returns></returns>
         public async Task<IResult> EventRequestCancel(int eventId, string inviterPhone)
         {
             var getEventRequest = _eventRequestDal.Get(x => x.EventId == eventId && x.InviterPhone == inviterPhone).Result;
             await _eventRequestDal.Delete(getEventRequest);
             return new SuccessResult("Event katılma talebi iptal edilmiştir", 200);
         }
+
+        
 
         /// <summary>
         /// evente katılmayı kabul etme veya reddetme
@@ -91,20 +116,38 @@ namespace Business.Repositories.EventRequestRepository
         }
 
         /// <summary>
-        /// request tablosundan aldığımız eventIdleri event tablosundan getirip yolluyoruz
+        /// request tablosundan aldığımız kişinin istek attığı eventIdleri event tablosundan getirip yolluyoruz
         /// </summary>
         /// <param name="phone"></param>
         /// <returns></returns>
-        public IDataResult<List<Event>> GetPersonalEventRequest(string phone)
+        public IDataResult<List<GetRequestedEventDto>> GetPersonalEventRequest(string phone)
         {
-            var allRequestEvent = new List<Event>();
+            var allRequestEvent = new List<GetRequestedEventDto>();
             var eventRequest = _eventRequestDal.GetAll(x => x.InviterPhone == phone).Result;
             foreach (var item in eventRequest)
             {
                 var singleEvent = _eventDal.Get(x => x.EventId == item.EventId).Result;
-                allRequestEvent.Add(singleEvent);
+                var getEventRequestDto = new GetRequestedEventDto
+                {
+                    ActiveCount = singleEvent.ActiveCount,
+                    EventCount = singleEvent.EventCount,
+                    EventStatus = singleEvent.EventStatus,
+                    EventCategory = singleEvent.EventCategory,
+                    EventDate = singleEvent.EventDate,
+                    EventCreateDate = singleEvent.EventCreateDate,
+                    EventDescription = singleEvent.EventDescription,
+                    EventId = item.EventId,
+                    EventLastUpdateDate = singleEvent.EventLastUpdateDate,
+                    EventLatitude = singleEvent.EventLatitude,
+                    EventLongitude = singleEvent.EventLongitude,
+                    EventName = singleEvent.EventName,
+                    IsDeleted = singleEvent.IsDeleted,
+                    Phone = singleEvent.Phone,
+                    RequestStatus = item.Status
+                };
+                allRequestEvent.Add(getEventRequestDto);
             }
-            return new SuccessDataResult<List<Event>>(allRequestEvent, "İstek Atılan eventler başarılı bir şekilde listelenmiştir", 200);
+            return new SuccessDataResult<List<GetRequestedEventDto>>(allRequestEvent, "İstek Atılan eventler başarılı bir şekilde listelenmiştir", 200);
         }
 
         /// <summary>
@@ -118,7 +161,7 @@ namespace Business.Repositories.EventRequestRepository
             var getEvents = _eventDal.GetAll(x => x.Phone == phone && x.EventStatus == "active" && x.ActiveCount < x.EventCount).Result;
             foreach (var item in getEvents)
             {
-                var requestDetail = _eventRequestDal.GetAll(x => x.EventId == item.EventId).Result;
+                var requestDetail = _eventRequestDal.GetAll(x => x.EventId == item.EventId && x.Status == "pending").Result;
 
                 foreach (var item2 in requestDetail)
                 {

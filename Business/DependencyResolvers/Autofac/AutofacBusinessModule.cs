@@ -5,6 +5,7 @@ using Business.Authentication;
 using Business.Repositories.CategoryRepository;
 using Business.Repositories.EmailRepository;
 using Business.Repositories.EventRepository;
+using Business.Repositories.EventRequestRepository;
 using Business.Repositories.OperationClaimRepository;
 using Business.Repositories.UserOperationClaimRepository;
 using Business.Repositories.UserRepository;
@@ -13,6 +14,7 @@ using Core.Utilities.Security.JWT;
 using DataAccess.Repositories.CategoryRepository;
 using DataAccess.Repositories.EmailRepository;
 using DataAccess.Repositories.EventRepository;
+using DataAccess.Repositories.EventRequestRepository;
 using DataAccess.Repositories.OperationClaimRepository;
 using DataAccess.Repositories.UserOperationClaimRepository;
 using DataAccess.Repositories.UserRepository;
@@ -40,6 +42,9 @@ namespace Business.DependencyResolvers.Autofac
 
             builder.RegisterType<EventManager>().As<IEventService>();
             builder.RegisterType<EfEventDal>().As<IEventDal>();
+
+            builder.RegisterType<EventRequestManager>().As<IEventRequestService>();
+            builder.RegisterType<EfEventRequestDal>().As<IEventRequestDal>();
 
             builder.RegisterType<AuthManager>().As<IAuthService>();
 

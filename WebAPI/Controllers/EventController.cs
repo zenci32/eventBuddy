@@ -29,10 +29,10 @@ namespace WebAPI.Controllers
             return BadRequest(result);
         }
 
-        [HttpGet("[action]")]
-        public async Task<IActionResult> GettAllEvent()
+        [HttpPost("[action]")]
+        public async Task<IActionResult> GettAllEvent(string phone)
         {
-            var result = await _eventService.GetAllEvent();
+            var result = await _eventService.GetAllEvent(phone);
             if (result.Success)
             {
                 return Ok(result);
