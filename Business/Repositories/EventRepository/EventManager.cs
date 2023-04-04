@@ -38,7 +38,7 @@ namespace Business.Repositories.EventRepository
                 EventLongitude = eventDto.EventLongitude,
                 IsDeleted = false,
                 Phone = eventDto.Phone,
-                EventStatus = "starting"
+                EventStatus = "active"
             };
             await _eventDal.Add(eventt);
             return new SuccessResult("Event başarıyla oluşturulmuştur", 200);

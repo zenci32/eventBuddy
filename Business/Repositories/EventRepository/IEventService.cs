@@ -15,7 +15,6 @@ namespace Business.Repositories.EventRepository
         Task<IResult> Update(Event eventt);
         Task<IResult> Delete(int eventId);
         Task<IDataResult<List<Event>>> GetAllEvent();
-
         Task<IDataResult<List<Event>>> GetPersonalEvent(string phone);
     }
 }

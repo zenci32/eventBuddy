@@ -47,7 +47,7 @@ app.ConfigureCustomExcepitonMiddleware();
 
 app.UseCors("AllowOrigin");
 
-app.UseHttpsRedirection();
+//app.UseHttpsRedirection();
 app.UseAuthentication();
 
 app.UseAuthorization();

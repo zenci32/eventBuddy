@@ -11,9 +11,20 @@ namespace Business.Repositories.EventRequestRepository
 {
     public interface IEventRequestService
     {
-        Task<IResult> Add(EventRequest eventRequest);
+        Task<IResult> EventRequest(int eventId,string inviterPhone);
         Task<IResult> Update(EventRequest eventRequest);
-        Task<IResult> Delete(int eventId);
+        Task<IResult> EventRequestCancel(int eventId,string inviterPhone);
+
+        /// <summary>
+        /// request tablosundan aldığımız eventIdleri event tablosundan getirip yolluyoruz
+        /// </summary>
+        /// <param name="phone"></param>
+        /// <returns></returns>
+        IDataResult<List<Event>> GetPersonalEventRequest(string phone);
+
+        IDataResult<List<RequestEventNotifyDto>> GetRequestEventNotify(string phone);
+
+        IResult GetAcceptOrReject(string invaterPhone, int eventId,bool status);
 
     }
 }

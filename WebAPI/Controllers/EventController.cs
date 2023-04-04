@@ -1,6 +1,7 @@
 ﻿using Business.Abstract;
 using Business.Repositories.EventRepository;
 using Core.Utilities.Security.JWT;
+using Entities.Concrete;
 using Entities.Dtos;
 using Microsoft.AspNetCore.Mvc;
 
@@ -39,5 +40,37 @@ namespace WebAPI.Controllers
             return BadRequest(result);
         }
 
+        [HttpPost("[action]")]
+        public async Task<IActionResult> UpdateEvent(Event eventt)
+        {
+            var result = await _eventService.Update(eventt);
+            if (result.Success)
+            {
+                return Ok(result);
+            }
+            return BadRequest(result);
+        }
+
+        [HttpPost("[action]")]
+        public async Task<IActionResult> DeleteEvent(int eventId)
+        {
+            var result = await _eventService.Delete(eventId);
+            if (result.Success)
+            {
+                return Ok(result);
+            }
+            return BadRequest(result);
+        }
+
+        [HttpPost("[action]")]
+        public async Task<IActionResult> GetPersonalEvent(string phone)
+        {
+            var result = await _eventService.GetPersonalEvent(phone);
+            if (result.Success)
+            {
+                return Ok(result);
+            }
+            return BadRequest(result);
+        }
     }
 }
