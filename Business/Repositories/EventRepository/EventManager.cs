@@ -83,7 +83,7 @@ namespace Business.Repositories.EventRepository
 
         public async Task<IDataResult<List<Event>>> GetPersonalEvent(string phone)
         {
-            var getPersonAllEvent = await _eventDal.GetAll(x => x.Phone == phone);
+            var getPersonAllEvent = await _eventDal.GetAll(x => x.Phone == phone && x.IsDeleted == false);
             return new SuccessDataResult<List<Event>>(getPersonAllEvent, "Eventler başarılı bir şekilde listelenmiştir", 200);
         }
 
